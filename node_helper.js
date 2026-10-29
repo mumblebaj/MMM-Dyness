@@ -1,4 +1,6 @@
 const https = require("https");
+const fs = require("fs");
+const path = require("path");
 const NodeHelper = require("node_helper");
 const { API_PATH, buildSignedRequest, getApiBaseUrl, parseApiResponse } = require("./lib/dyness-api");
 
@@ -74,6 +76,12 @@ module.exports = NodeHelper.create({
         request.body,
         Number(config.requestTimeout) > 0 ? Number(config.requestTimeout) : 30000
       );
+      // TEMPORARY: dump raw API response for field mapping; remove after testing
+      try {
+        fs.writeFileSync(path.join(__dirname, "api-output.json"), JSON.stringify(response, null, 2));
+      } catch (writeError) {
+        console.log(`${this.name}: unable to write api-output.json: ${writeError.message}`);
+      }
       this.sendSocketNotification("DYNESS_DATA", {
         data: parseApiResponse(response),
         updatedAt: new Date().toISOString()

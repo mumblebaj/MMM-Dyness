@@ -54,7 +54,7 @@ Module.register("MMM-Dyness", {
     const wrapper = document.createElement("section");
     wrapper.className = "dyness-status";
 
-    const heading = document.createElement("header");
+    const heading = document.createElement("div");
     heading.className = "dyness-status-header";
     const deviceImage = document.createElement("img");
     deviceImage.className = "dyness-device-image";
@@ -63,7 +63,8 @@ Module.register("MMM-Dyness", {
     deviceImage.setAttribute("aria-hidden", "true");
     heading.appendChild(deviceImage);
 
-    const title = document.createElement("h2");
+    const title = document.createElement("div");
+    title.className = "dyness-title";
     title.textContent = this.config.title;
     heading.appendChild(title);
 
@@ -109,7 +110,7 @@ Module.register("MMM-Dyness", {
       }
       wrapper.appendChild(readings);
 
-      const footer = document.createElement("footer");
+      const footer = document.createElement("div");
       footer.className = "dyness-updated";
       footer.textContent = this.updatedAt
         ? `Updated ${new Date(this.updatedAt).toLocaleTimeString()}`
