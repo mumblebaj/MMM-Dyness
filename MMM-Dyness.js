@@ -11,7 +11,7 @@ Module.register("MMM-Dyness", {
   },
 
   start() {
-    this.data = null;
+    this.dynessData = null;
     this.error = null;
     this.updatedAt = null;
     this.getDynessData();
@@ -37,7 +37,7 @@ Module.register("MMM-Dyness", {
 
   socketNotificationReceived(notification, payload) {
     if (notification === "DYNESS_DATA") {
-      this.data = payload.data;
+      this.dynessData = payload.data;
       this.updatedAt = payload.updatedAt;
       this.error = null;
     } else if (notification === "DYNESS_ERROR") {
@@ -69,15 +69,15 @@ Module.register("MMM-Dyness", {
 
     const status = document.createElement("p");
     status.className = this.error ? "dyness-status-message dyness-error" : "dyness-status-message";
-    status.textContent = this.error || (this.data ? "Connected" : "Connecting");
+    status.textContent = this.error || (this.dynessData ? "Connected" : "Connecting");
     heading.appendChild(status);
     wrapper.appendChild(heading);
 
-    if (this.data) {
-      const battery = this.data.batteryInfo || {};
-      const pv = this.data.pvInfo || {};
-      const grid = this.data.gridInfo || {};
-      const load = this.data.loadInfo || {};
+    if (this.dynessData) {
+      const battery = this.dynessData.batteryInfo || {};
+      const pv = this.dynessData.pvInfo || {};
+      const grid = this.dynessData.gridInfo || {};
+      const load = this.dynessData.loadInfo || {};
       const metrics = [
         ["State of charge", battery.soc, "%"],
         ["State of health", battery.soh, "%"],
