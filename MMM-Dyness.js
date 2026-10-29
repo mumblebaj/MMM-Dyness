@@ -11,7 +11,7 @@ Module.register("MMM-Dyness", {
   },
 
   start() {
-    this.dynessData = null;
+    this.devices = null;
     this.error = null;
     this.updatedAt = null;
     this.getDynessData();
@@ -37,7 +37,7 @@ Module.register("MMM-Dyness", {
 
   socketNotificationReceived(notification, payload) {
     if (notification === "DYNESS_DATA") {
-      this.dynessData = payload.data;
+      this.devices = payload.devices;
       this.updatedAt = payload.updatedAt;
       this.error = null;
     } else if (notification === "DYNESS_ERROR") {
@@ -70,45 +70,15 @@ Module.register("MMM-Dyness", {
 
     const status = document.createElement("p");
     status.className = this.error ? "dyness-status-message dyness-error" : "dyness-status-message";
-    status.textContent = this.error || (this.dynessData ? "Connected" : "Connecting");
+    status.textContent = this.error || (this.devices ? "Connected" : "Connecting");
     heading.appendChild(status);
     wrapper.appendChild(heading);
 
-    if (this.dynessData) {
-      const battery = this.dynessData.batteryInfo || {};
-      const pv = this.dynessData.pvInfo || {};
-      const grid = this.dynessData.gridInfo || {};
-      const load = this.dynessData.loadInfo || {};
-      const metrics = [
-        ["State of charge", battery.soc, "%"],
-        ["State of health", battery.soh, "%"],
-        ["Battery power", battery.batteryPower, "W"],
-        ["Battery voltage", battery.batteryVoltage, "V"],
-        ["Battery current", battery.batteryCurrent, "A"],
-        ["Battery temperature", battery.batteryTemperature, "°C"],
-        ["PV power", pv.pvTotalPower, "W"],
-        ["Grid power", grid.activePower, "W"],
-        ["Load power", load.loadTotalPower, "W"],
-        ["BMS status", battery.bmsCommunicationStatus, ""]
-      ];
-
-      const readings = document.createElement("div");
-      readings.className = "dyness-readings";
-      for (const [label, value, unit] of metrics) {
-        const item = document.createElement("div");
-        item.className = "dyness-reading";
-        const name = document.createElement("span");
-        name.className = "dyness-reading-label";
-        name.textContent = label;
-        const reading = document.createElement("strong");
-        reading.className = "dyness-reading-value";
-        reading.textContent = value === undefined || value === null || value === ""
-          ? "--"
-          : `${value}${unit ? ` ${unit}` : ""}`;
-        item.append(name, reading);
-        readings.appendChild(item);
-      }
-      wrapper.appendChild(readings);
+    if (this.devices) {
+      const multiple = this.devices.length > 1;
+      this.devices.forEach((device, index) => {
+        wrapper.appendChild(this.buildDevice(device, multiple ? device.name || `Battery ${index + 1}` : null));
+      });
 
       const footer = document.createElement("div");
       footer.className = "dyness-updated";
@@ -119,5 +89,80 @@ Module.register("MMM-Dyness", {
     }
 
     return wrapper;
+  },
+
+  getChargeState(battery) {
+    const current = Number(battery.batteryCurrent);
+    const hasCurrent = battery.batteryCurrent !== undefined && battery.batteryCurrent !== "" && Number.isFinite(current);
+    if (String(battery.batteryStatus) === "2" || (hasCurrent && current < 0)) {
+      return { label: "Discharging", className: "dyness-discharging" };
+    }
+    if (hasCurrent && current > 0) {
+      return { label: "Charging", className: "dyness-charging" };
+    }
+    return { label: "Idle", className: "dyness-idle" };
+  },
+
+  buildDevice(device, label) {
+    const section = document.createElement("div");
+    section.className = "dyness-device";
+
+    if (device.error || !device.data) {
+      const message = document.createElement("p");
+      message.className = "dyness-status-message dyness-error";
+      message.textContent = `${label ? `${label}: ` : ""}${device.error || "No data"}`;
+      section.appendChild(message);
+      return section;
+    }
+
+    const battery = device.data.batteryInfo || {};
+    const state = this.getChargeState(battery);
+
+    if (label) {
+      const name = document.createElement("div");
+      name.className = "dyness-device-name";
+      name.textContent = label;
+      section.appendChild(name);
+    }
+
+    const voltage = Number(battery.batteryVoltage);
+    const current = Number(battery.batteryCurrent);
+    const power = Number.isFinite(voltage) && Number.isFinite(current) && battery.batteryVoltage !== "" && battery.batteryCurrent !== ""
+      ? Math.round(voltage * current)
+      : undefined;
+    const range = (min, max) => (min === undefined || max === undefined ? undefined : min === max ? `${min}` : `${min} - ${max}`);
+    const metrics = [
+      ["State", state.label, "", state.className],
+      ["State of charge", battery.soc, "%"],
+      ["State of health", battery.soh, "%"],
+      ["Battery voltage", battery.batteryVoltage, "V"],
+      ["Battery current", battery.batteryCurrent, "A", state.className],
+      ["Battery power", power, "W", state.className],
+      ["Cycle count", battery.cycleCount, ""],
+      ["Cell voltage", range(battery.cellMinVoltage, battery.cellMaxVoltage), "V"],
+      ["Cell temperature", range(battery.cellMinTemperature, battery.cellMaxTemperature), "\u00B0C"],
+      ["BMS board temp", battery.bmsBoardTemp, "\u00B0C"],
+      ["Max charge current", battery.maxChargeCurrent, "A"],
+      ["Max discharge current", battery.maxDischargeCurrent, "A"]
+    ];
+
+    const readings = document.createElement("div");
+    readings.className = "dyness-readings";
+    for (const [labelText, value, unit, className] of metrics) {
+      const item = document.createElement("div");
+      item.className = "dyness-reading";
+      const name = document.createElement("span");
+      name.className = "dyness-reading-label";
+      name.textContent = labelText;
+      const reading = document.createElement("strong");
+      reading.className = className ? `dyness-reading-value ${className}` : "dyness-reading-value";
+      reading.textContent = value === undefined || value === null || value === ""
+        ? "--"
+        : `${value}${unit ? ` ${unit}` : ""}`;
+      item.append(name, reading);
+      readings.appendChild(item);
+    }
+    section.appendChild(readings);
+    return section;
   }
 });

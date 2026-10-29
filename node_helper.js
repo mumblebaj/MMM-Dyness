@@ -69,21 +69,37 @@ module.exports = NodeHelper.create({
 
     try {
       const baseUrl = getApiBaseUrl(config.apiBaseUrl);
-      const request = buildSignedRequest(config);
-      const response = await this.postJson(
-        `${baseUrl}${API_PATH}`,
-        request.headers,
-        request.body,
-        Number(config.requestTimeout) > 0 ? Number(config.requestTimeout) : 30000
-      );
-      // TEMPORARY: dump raw API response for field mapping; remove after testing
+      const timeout = Number(config.requestTimeout) > 0 ? Number(config.requestTimeout) : 30000;
+      const configured = Array.isArray(config.deviceSn) ? config.deviceSn : [config.deviceSn];
+      const devices = configured
+        .map((entry) => (entry && typeof entry === "object" ? entry : { sn: entry }))
+        .filter((entry) => entry.sn);
+      if (devices.length === 0) {
+        throw new Error("Dyness apiId, apiSecret, and deviceSn are required.");
+      }
+
+      const results = [];
+      const rawResponses = {};
+      for (const device of devices) {
+        const sn = String(device.sn);
+        try {
+          const request = buildSignedRequest({ ...config, deviceSn: sn });
+          const response = await this.postJson(`${baseUrl}${API_PATH}`, request.headers, request.body, timeout);
+          rawResponses[sn] = response;
+          results.push({ sn, name: device.name, data: parseApiResponse(response) });
+        } catch (deviceError) {
+          results.push({ sn, name: device.name, error: deviceError.message || "Unable to read device data." });
+        }
+      }
+
+      // TEMPORARY: dump raw API responses for field mapping; remove after testing
       try {
-        fs.writeFileSync(path.join(__dirname, "api-output.json"), JSON.stringify(response, null, 2));
+        fs.writeFileSync(path.join(__dirname, "api-output.json"), JSON.stringify(rawResponses, null, 2));
       } catch (writeError) {
         console.log(`${this.name}: unable to write api-output.json: ${writeError.message}`);
       }
       this.sendSocketNotification("DYNESS_DATA", {
-        data: parseApiResponse(response),
+        devices: results,
         updatedAt: new Date().toISOString()
       });
     } catch (error) {
