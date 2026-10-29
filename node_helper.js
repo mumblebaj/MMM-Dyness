@@ -1,6 +1,4 @@
 const https = require("https");
-const fs = require("fs");
-const path = require("path");
 const NodeHelper = require("node_helper");
 const { API_PATH, buildSignedRequest, getApiBaseUrl, parseApiResponse } = require("./lib/dyness-api");
 
@@ -79,25 +77,17 @@ module.exports = NodeHelper.create({
       }
 
       const results = [];
-      const rawResponses = {};
       for (const device of devices) {
         const sn = String(device.sn);
         try {
           const request = buildSignedRequest({ ...config, deviceSn: sn });
           const response = await this.postJson(`${baseUrl}${API_PATH}`, request.headers, request.body, timeout);
-          rawResponses[sn] = response;
           results.push({ sn, name: device.name, data: parseApiResponse(response) });
         } catch (deviceError) {
           results.push({ sn, name: device.name, error: deviceError.message || "Unable to read device data." });
         }
       }
 
-      // TEMPORARY: dump raw API responses for field mapping; remove after testing
-      try {
-        fs.writeFileSync(path.join(__dirname, "api-output.json"), JSON.stringify(rawResponses, null, 2));
-      } catch (writeError) {
-        console.log(`${this.name}: unable to write api-output.json: ${writeError.message}`);
-      }
       this.sendSocketNotification("DYNESS_DATA", {
         devices: results,
         updatedAt: new Date().toISOString()
