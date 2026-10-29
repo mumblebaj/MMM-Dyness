@@ -1,0 +1,83 @@
+.dyness-status {
+  width: min(100%, 420px);
+  color: var(--color-text, #fff);
+}
+
+.dyness-status-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding-bottom: 0.45rem;
+}
+
+.dyness-device-image {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 60px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.dyness-status-header h2 {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: var(--font-size-large, 1.2rem);
+  font-weight: 500;
+}
+
+.dyness-status-message {
+  flex: 0 1 auto;
+  max-width: 35%;
+  margin: 0;
+  color: #82d8bb;
+  font-size: var(--font-size-small, 0.8rem);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.dyness-error {
+  color: #ff9a8b;
+}
+
+.dyness-readings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem 1rem;
+  padding-top: 0.65rem;
+}
+
+.dyness-reading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dyness-reading-label {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: var(--font-size-small, 0.8rem);
+}
+
+.dyness-reading-value {
+  font-size: var(--font-size-medium, 1rem);
+  font-weight: 500;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.dyness-updated {
+  padding-top: 0.55rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: var(--font-size-xsmall, 0.7rem);
+  text-align: right;
+}
+
+@media (max-width: 420px) {
+  .dyness-readings {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
