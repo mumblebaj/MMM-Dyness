@@ -135,15 +135,15 @@ Module.register("MMM-Dyness", {
       ["State", state.label, "", state.className],
       ["State of charge", battery.soc, "%"],
       ["State of health", battery.soh, "%"],
-      ["Battery voltage", battery.batteryVoltage, "V"],
-      ["Battery current", battery.batteryCurrent, "A", state.className],
-      ["Battery power", power, "W", state.className],
+      ["Voltage", battery.batteryVoltage, "V"],
+      ["Current", battery.batteryCurrent, "A", state.className],
+      ["Power", power, "W", state.className],
       ["Cycle count", battery.cycleCount, ""],
       ["Cell voltage", range(battery.cellMinVoltage, battery.cellMaxVoltage), "V"],
-      ["Cell temperature", range(battery.cellMinTemperature, battery.cellMaxTemperature), "\u00B0C"],
-      ["BMS board temp", battery.bmsBoardTemp, "\u00B0C"],
-      ["Max charge current", battery.maxChargeCurrent, "A"],
-      ["Max discharge current", battery.maxDischargeCurrent, "A"]
+      ["Cell temp", range(battery.cellMinTemperature, battery.cellMaxTemperature), "\u00B0C"],
+      ["BMS temp", battery.bmsBoardTemp, "\u00B0C"],
+      ["Max charge", battery.maxChargeCurrent, "A"],
+      ["Max discharge", battery.maxDischargeCurrent, "A"]
     ];
 
     const readings = document.createElement("div");

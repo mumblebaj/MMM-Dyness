@@ -1,5 +1,5 @@
 .dyness-status {
-  width: min(100%, 420px);
+  width: min(100%, 520px);
   color: var(--color-text, #fff);
 }
 
@@ -80,6 +80,7 @@
 
 .dyness-reading-label {
   flex: 1 1 auto;
+  min-width: 0;
   text-align: left;
   white-space: nowrap;
   color: rgba(255, 255, 255, 0.72);
