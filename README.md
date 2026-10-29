@@ -4,7 +4,11 @@ A MagicMirror module that displays live Dyness battery and inverter telemetry us
 
 ## Install
 
-Place this folder in your MagicMirror `modules` directory. No `npm install` is required. Add the module to `config/config.js`:
+Place this folder in your MagicMirror `modules` directory. No `npm install` is required. Add the module to `config/config.js`.
+
+### Single battery
+
+Set `deviceSn` to the serial number as a string:
 
 ```js
 {
@@ -20,6 +24,28 @@ Place this folder in your MagicMirror `modules` directory. No `npm install` is r
 }
 ```
 
+### Multiple batteries
+
+Set `deviceSn` to a list. Each entry is either a serial-number string or an object with `sn` and an optional display `name`. Each battery is shown in its own labelled block; unnamed batteries are labelled "Battery 1", "Battery 2" and so on:
+
+```js
+{
+  module: "MMM-Dyness",
+  position: "top_right",
+  config: {
+    apiBaseUrl: "https://global-openapi.dyness.com/openapi/ems-device",
+    apiId: "YOUR_DYNESS_API_ID",
+    apiSecret: "YOUR_DYNESS_API_SECRET",
+    deviceSn: [
+      { sn: "FIRST_DEVICE_SERIAL_NUMBER", name: "Master" },
+      { sn: "SECOND_DEVICE_SERIAL_NUMBER", name: "Slave" }
+    ],
+    updateInterval: 60000
+  }
+}
+```
+
+The module requests each device separately on every update. If one device fails, its block shows the error and the others still display. Keep `updateInterval` generous when listing many devices, because the API allows two requests per second.
 Obtain API credentials through Dyness partner registration and authorization. Select the API base URL for the region where the device is registered; cross-region requests are not supported. The protocol lists these regional hosts:
 
 | Region | Host |
@@ -38,8 +64,14 @@ The protocol's endpoint schema names the serial-number field `deviceSn`, while i
 
 ## Display and polling
 
-The module shows battery SOC/SOH, power, voltage, current, temperature, PV, grid, load, and BMS communication status. `updateInterval` is in milliseconds and defaults to 60 seconds; the module enforces a minimum of five seconds to remain below Dyness's two-requests-per-second limit. Battery power and status are displayed as returned by the API without assuming sign or enum meanings.
+For each battery the module shows:
 
+- **State**: Charging (green), Discharging (red) or Idle (grey), derived from the API `batteryStatus` (`2` is treated as discharging) and the sign of the battery current. Current and power use the same colour.
+- State of charge and state of health, voltage, current, and power (calculated as voltage × current).
+- Cycle count, cell voltage range, cell temperature range, and BMS temperature.
+- Maximum charge and discharge current.
+
+The API response for these batteries contains only `batteryInfo`, so PV, grid, and load values are not displayed. `updateInterval` is in milliseconds and defaults to 60 seconds; the module enforces a minimum of five seconds to remain below Dyness's two-requests-per-second limit.
 ## Authentication notes
 
 Each POST includes the Dyness `Authorization`, `Content-MD5`, `Content-Type`, and `Date` headers. The signature is Base64 HMAC-SHA1 over:
