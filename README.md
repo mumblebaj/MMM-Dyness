@@ -1,10 +1,17 @@
 # MMM-Dyness
 
-A MagicMirror module that displays live Dyness battery and inverter telemetry using the Dyness OpenAPI `GetRealTimeDataBySN` endpoint. It performs read-only requests and has no third-party npm dependencies.
+A [MagicMirror²](https://magicmirror.builders) module that displays live Dyness battery and inverter telemetry using the Dyness OpenAPI `GetRealTimeDataBySN` endpoint. It performs read-only requests and has no third-party npm dependencies.
+
+[![Platform](https://img.shields.io/badge/platform-MagicMirror-informational)](https://MagicMirror.builders)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE)
+[![ESLint Enabled](https://img.shields.io/badge/ESLint-Enabled-blue.svg)](https://eslint.org/)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat)](https://prettier.io/)
+
+![Example](images/image-1.png)
 
 ## Install
 
-Place this folder in your MagicMirror `modules` directory. No `npm install` is required. Add the module to `config/config.js`.
+Place this folder in your [MagicMirror²](https://magicmirror.builders) `modules` directory. No `npm install` is required. Add the module to `config/config.js`.
 
 ### Single battery
 
