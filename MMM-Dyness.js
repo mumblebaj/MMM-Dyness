@@ -58,7 +58,7 @@ Module.register("MMM-Dyness", {
     heading.className = "dyness-status-header";
     const deviceImage = document.createElement("img");
     deviceImage.className = "dyness-device-image";
-    deviceImage.src = this.file("PowerBrickMaxWeb.png");
+    deviceImage.src = this.file("images/PowerBrickMaxWeb.png");
     deviceImage.alt = "Dyness PowerBrick Max battery";
     deviceImage.setAttribute("aria-hidden", "true");
     heading.appendChild(deviceImage);
