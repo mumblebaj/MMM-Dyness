@@ -11,6 +11,15 @@ A [MagicMirror²](https://magicmirror.builders) module that displays live Dyness
 
 ## Install
 
+In your terminal, go to your MagicMirror's Module folder:
+````
+cd ~/MagicMirror/modules
+````
+
+Clone this repository:
+````
+git clone https://github.com/mumblebaj/MMM-Dyness.git
+
 Place this folder in your [MagicMirror²](https://magicmirror.builders) `modules` directory. No `npm install` is required. Add the module to `config/config.js`.
 
 ### Single battery
