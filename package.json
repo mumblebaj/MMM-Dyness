@@ -1,13 +1,30 @@
 {
   "name": "mmm-dyness",
   "version": "1.0.0",
-  "description": "MagicMirror module for Dyness battery telemetry",
+  "description": "MagicMirror² module for Dyness battery telemetry",
   "main": "MMM-Dyness.js",
   "scripts": {
     "test": "node --test"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mumblebaj/MMM-Dyness.git"
+  },
+  "keywords": [
+    "MagicMirror",
+    "Dyness",
+    "Smarthome"
+  ],
+  "author": "mumblebaj",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mumblebaj/MMM-Dyness/issues"
+  },
+  "homepage": "https://github.com/mumblebaj/MMM-Dyness#readme",
+  "dependencies": {
+    "dyness": "^1.0.0"
+  },
   "engines": {
     "node": ">=18"
-  },
-  "license": "MIT"
+  }
 }
