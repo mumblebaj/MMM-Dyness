@@ -10,13 +10,15 @@ A [MagicMirror²](https://magicmirror.builders) module that displays live Dyness
 ## Install
 
 In your terminal, go to your MagicMirror's Module folder:
-````
+```bash
 cd ~/MagicMirror/modules
 ````
 
 Clone this repository:
-````
+
+```bash
 git clone https://github.com/mumblebaj/MMM-Dyness.git
+```
 
 Place this folder in your [MagicMirror²](https://magicmirror.builders) `modules` directory. No `npm install` is required. Add the module to `config/config.js`.
 
@@ -57,6 +59,16 @@ Set `deviceSn` to a list. Each entry is either a serial-number string or an obje
     updateInterval: 60000
   }
 }
+```
+
+## Update
+
+To update the module run the below in the module folder:
+
+```bash
+cd ~/Magicmirror/modules/MMM-Dyness
+
+git pull
 ```
 
 The module requests each device separately on every update. If one device fails, its block shows the error and the others still display. Keep `updateInterval` generous when listing many devices, because the API allows two requests per second.
